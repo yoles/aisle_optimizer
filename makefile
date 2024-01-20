@@ -77,16 +77,6 @@ remove-project: force-clean
 		echo "Suppression annulée."; \
 	fi
 
-delete-file:
-	@read -p "Êtes-vous sûr de vouloir supprimer le fichier ? (y/n) " confirmation; \
-	if [ $$confirmation = "y" ]; then \
-		rm votre_fichier; \
-		echo "Fichier supprimé."; \
-	else \
-		echo "Suppression annulée."; \
-	fi
-
-
 ##
 ## Backend Command
 ##---------------------------------------------------------------------------
