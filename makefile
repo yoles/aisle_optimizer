@@ -27,15 +27,69 @@ help:
 ##
 ## Project setup
 ##---------------------------------------------------------------------------
+build:	## Build project container
+build:
+	$(FIG) build
 
-start:          ## Install and start the project
+up:	## Start project container
+up: apache-stop
+	$(FIG) up
+
+down: ## Stop project container
+	$(FIG) down
+
+start: ## Install and start the project
 start: build up
+
+##
+## Internal rules
+##---------------------------------------------------------------------------
+apache-stop:	## Stop apache to free port 80
+	sudo /etc/init.d/apache2 stop
+
+permissions:	## Give current user right on project
+permissions:
+	sudo chown -R ${USER}:${USER} ./
+
+force-clean:	## Remove All dangling images and containers + project images
+force-clean:
+	$(info $(RED)All images (prune) and containers (prune) will be deleted$(COLOR_RESET))
+	docker container prune
+	docker image prune
+	docker rmi -f $(PROJECT_NAME)_$(SERVICE) $(PROJECT_NAME)_$(SERVICE_SERVER)
+	docker ps
+	docker ps -a
+	docker images
+
+force-restart: ## removes images and container, rebuild, and start project
+force-restart: force-clean start
+
+remove-project:	## remove all images, container prune and remove project
+remove-project: force-clean
+	$(info $(RED) [WARNING] $(PROJECT_NAME) will be removed $(COLOR_RESET))
+	@read -p "Are you sure you want to continue ? (y/n) " confirmation; \
+	confirmation=$$(echo $$confirmation | tr '[:upper:]' '[:lower:]'); \
+	if [ "$$confirmation" = "yes" ] || [ "$$confirmation" = "y" ] || [ "$$confirmation" = "oui" ] || [ "$$confirmation" = "o" ]; then \
+		make permissions \
+		rm -Rf ../$(PROJECT_NAME) && cd .. \
+		echo "Fichier supprimé."; \
+	else \
+		echo "Suppression annulée."; \
+	fi
+
+delete-file:
+	@read -p "Êtes-vous sûr de vouloir supprimer le fichier ? (y/n) " confirmation; \
+	if [ $$confirmation = "y" ]; then \
+		rm votre_fichier; \
+		echo "Fichier supprimé."; \
+	else \
+		echo "Suppression annulée."; \
+	fi
 
 
 ##
-## Command
+## Backend Command
 ##---------------------------------------------------------------------------
-
 showcommand:	## show all personnal command
 showcommand:
 	$(RUN) $(SERVICE) $(MANAGE)
@@ -43,25 +97,6 @@ showcommand:
 executecommand: ## usage: name=[command]
 executecommand:
 	$(EXEC) $(SERVICE) $(MANAGE) $(name)
-
-
-##
-## Internal rules
-##---------------------------------------------------------------------------
-rbuild:
-	$(EXEC) $(SERVICE_SERVER) sh -c "cd frontend && npm install && npm run build && cp -R build/* /usr/share/nginx/html"
-
-build:
-	$(FIG) build
-
-up:	## Start project container
-	$(FIG) up
-
-down: ## Stop project container
-	$(FIG) down
-
-apache-stop:
-	sudo /etc/init.d/apache2 stop
 
 tests:
 	$(EXEC) $(SERVICE) sh -c "pytest"
@@ -84,49 +119,6 @@ right-app: app
 	sudo chown -R ${USER}:${USER} ./apps/$(name)
 	$(info $(YELLOW)Don't forget to add $(name) into api/setting/base.py$(COLOR_RESET))
 
-run-container:	## Start container
-run-container:
-	$(EXEC) -it $(SERVICE)
-
-
-permissions:	## Give current user right on project
-permissions:
-	sudo chown -R ${USER}:${USER} ./
-
-
-db-dump:
-	$(EXEC) $(SERVICE_DB) bash -c "pg_dumpall -U postgres > backup.sql"
-	docker cp $(shell docker ps --no-trunc -aqf name=a$(PROJECT_NAME)_db):/$(BACKUP_SQL) $(TMP_SQL)
-	sed '/CREATE ROLE postgres;/d' ./$(TMP_SQL) > $(BACKUP_SQL)
-	rm $(TMP_SQL)
-
-force-clean:
-	$(info $(RED)All images (prune) and containers (prune) will be deleted$(COLOR_RESET))
-	docker container prune
-	docker image prune
-	docker rmi -f $(PROJECT_NAME)_backend postgres $(PROJECT_NAME)_db
-	docker ps
-	docker ps -a
-	docker images
-
-force-restart:	## removes images and container, rebuild, and start project
-force-restart: force-clean start
-
-db-shell:
-db-shell:
-	docker exec -it $(shell docker ps --no-trunc -aqf name=$(PROJECT_NAME)_db) bash
-
-remove-images:	## remove all images and container prune + project image
-remove-images:
-	docker container prune
-	docker image prune
-	docker rmi -f $(shell docker images --no-trunc -aq $(PROJECT_NAME)_db) $(shell docker images --no-trunc -aq $(PROJECT_NAME)_backend)
-
-remove-project:	## remove all images, container prune and remove project
-remove-project: remove-images
-	make permissions
-	rm -Rf ../$(PROJECT_NAME) && cd ..
-
 install: ## install all dependencies of specific file (default: dev.txt)  args: filename=[]
 install:
 	pip install -r requirements/$(filename).txt
@@ -135,6 +127,26 @@ translate: ## make + compile message in specific lang (default: fr)  args: lang=
 translate:
 	$(MANAGE) makemessages -l $(lang)
 	$(MANAGE) compilemessages
+
+##
+## Frontend Command
+##---------------------------------------------------------------------------
+rbuild:
+	$(EXEC) $(SERVICE_SERVER) sh -c "cd frontend && npm install && npm run build && cp -R build/* /usr/share/nginx/html"
+
+##
+## Frontend Command
+##---------------------------------------------------------------------------
+db-dump:
+	$(EXEC) $(SERVICE_DB) bash -c "pg_dumpall -U postgres > backup.sql"
+	docker cp $(shell docker ps --no-trunc -aqf name=a$(PROJECT_NAME)_db):/$(BACKUP_SQL) $(TMP_SQL)
+	sed '/CREATE ROLE postgres;/d' ./$(TMP_SQL) > $(BACKUP_SQL)
+	rm $(TMP_SQL)
+
+db-shell:
+db-shell:
+	docker exec -it $(shell docker ps --no-trunc -aqf name=$(PROJECT_NAME)_db) bash
+
 
 ##
 ## Unit Testing
