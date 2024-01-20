@@ -1,0 +1,17 @@
+# Folders
+backend/.envs/
+.vscode/
+.idea/
+__pycache__/
+build/
+pgdata/
+node_modules/
+
+# Files
+logs
+path_2_test.py
+backup.sql
+coverage.xml
+coverage.html
+.coverage
+webserver/dockerfileProd
