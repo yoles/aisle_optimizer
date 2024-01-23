@@ -38,7 +38,7 @@ jobs:
         EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
 
       run: |
-        coverage run manage.py test apps
+        coverage run backend/manage.py test apps
         coverage xml
     - name: Code Coverage
       uses: codecov/codecov-action@v3
