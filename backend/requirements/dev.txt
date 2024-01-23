@@ -9,7 +9,6 @@ django-extensions==3.2.3
 # Other
 # ----------------------------------------------------------------
 autopep8==2.0.4
-black==23.12.1
 flake8==7.0.0
 ipython==8.20.0
 pyinstrument==4.6.1
