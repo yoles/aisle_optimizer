@@ -94,6 +94,10 @@ tests:
 test:
 	$(EXEC) $(SERVICE) sh -c "pytest -k $(name)"
 
+flake8:
+	$(EXEC) $(SERVICE) sh -c "flake8 ."
+
+
 shell:
 	$(EXEC) $(SERVICE) python manage.py shell
 
