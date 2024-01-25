@@ -37,10 +37,7 @@ THIRD_PARTY = [
     "corsheaders",
 ]
 
-DJANGO_APP = [
-    "accounts",
-    "authentication"
-]
+DJANGO_APP = ["accounts", "authentication"]
 
 INSTALLED_APPS = BUILT_IN + DJANGO_APP
 
