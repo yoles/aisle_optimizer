@@ -37,7 +37,10 @@ THIRD_PARTY = [
     "corsheaders",
 ]
 
-DJANGO_APP = ["authentication"]
+DJANGO_APP = [
+    "accounts",
+    "authentication"
+]
 
 INSTALLED_APPS = BUILT_IN + DJANGO_APP
 
@@ -165,4 +168,4 @@ REST_FRAMEWORK = {
     ]
 }
 
-AUTH_USER_MODEL = "authentication.User"
+AUTH_USER_MODEL = "accounts.User"
