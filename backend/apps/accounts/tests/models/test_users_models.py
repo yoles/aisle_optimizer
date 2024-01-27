@@ -1,5 +1,6 @@
 import pytest
 
+from apps.accounts.factories import UserFactory
 from apps.accounts.models import User
 
 
@@ -20,3 +21,9 @@ def test_user_email_with_username_raise_error():
         User.objects.create(username="test")
 
     assert User.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_user__str__print_email():
+    user = UserFactory(email="test@example.com")
+    assert user.__str__() == "test@example.com"
