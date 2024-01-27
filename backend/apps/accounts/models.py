@@ -8,7 +8,6 @@ class UserManager(BaseUserManager):
     def create_user(
         self, email: str, password: str, group=None, **extra_fields
     ):
-        """Create, save and return a new user (email and password required)"""
         if not email:
             raise ValueError(_("The Email must be set"))
         if not password:
@@ -26,9 +25,6 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password, **extra_fields):
-        """
-        Create and save a SuperUser with the given email and password.
-        """
         extra_fields.setdefault("first_name", "admin")
         extra_fields.setdefault("last_name", "admin")
         extra_fields.setdefault("is_staff", True)
