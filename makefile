@@ -97,6 +97,8 @@ test:
 flake8:
 	$(EXEC) $(SERVICE) sh -c "flake8 ."
 
+black:
+	$(EXEC) $(SERVICE) sh -c "black api apps"
 
 shell:
 	$(EXEC) $(SERVICE) python manage.py shell
