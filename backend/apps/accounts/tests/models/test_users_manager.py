@@ -46,7 +46,7 @@ def test_create_superuser_with_no_email():
 
 
 @pytest.mark.django_db
-def test_create_with_no_password():
+def test_create_superuser_with_no_password():
     assert User.objects.count() == 0
 
     with pytest.raises(ValueError):
