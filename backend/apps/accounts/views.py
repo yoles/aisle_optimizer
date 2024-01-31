@@ -11,7 +11,7 @@ class Register(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
 
-        if email is None or password is None:
+        if not email or not password:
             return JsonResponse(
                 {"detail": "Email and password are required."}, status=403
             )
@@ -19,6 +19,7 @@ class Register(APIView):
         validate_password(password)
         user = get_user_model().objects.create(email=email)
         user.set_password(password)
+        user.save()
 
         user_serializer = UserSerializer(user)
         return JsonResponse(user_serializer.data, status=200)
