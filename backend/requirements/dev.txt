@@ -9,7 +9,11 @@ django-extensions==3.2.3
 # Other
 # ----------------------------------------------------------------
 autopep8==2.0.4
-black==23.12.1
+black==24.1.0
+coverage==7.4.0
+factory-boy==3.3.0
 flake8==7.0.0
-ipython==8.20.0
+pytest==7.4.4
+pytest-cov==4.1.0
+pytest-django==4.7.0
 pyinstrument==4.6.1

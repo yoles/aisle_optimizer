@@ -1,12 +1,7 @@
-import './App.css';
-
-
-function App() {
+export function Landing() {
     return (
         <div className="App">
             <h1>Hello World !</h1>
         </div>
     );
 }
-
-export default App;
